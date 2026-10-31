@@ -1,0 +1,36 @@
+# Dependabot keeps dependencies current: security fixes as soon as they're published, routine updates weekly and
+# grouped. Same timing as the office-jerk repo (6 PM Monday Sydney time).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "18:00"
+      timezone: Australia/Sydney
+    open-pull-requests-limit: 5
+    labels: [dependencies]
+    ignore:
+      # Node type definitions should match the Node version we run on (22).
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+  - package-ecosystem: gradle
+    directory: /android
+    schedule:
+      interval: weekly
+      day: monday
+      time: "18:00"
+      timezone: Australia/Sydney
+    labels: [dependencies]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "18:00"
+      timezone: Australia/Sydney
+    labels: [dependencies]

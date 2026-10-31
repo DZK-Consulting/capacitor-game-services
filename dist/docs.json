@@ -1,0 +1,331 @@
+{
+  "api": {
+    "name": "GameServicesPlugin",
+    "slug": "gameservicesplugin",
+    "docs": "",
+    "tags": [],
+    "methods": [
+      {
+        "name": "signIn",
+        "signature": "(options?: SignInOptions | undefined) => Promise<SignInResult>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "SignInOptions | undefined"
+          }
+        ],
+        "returns": "Promise<SignInResult>",
+        "tags": [],
+        "docs": "Signs in, silently where the platform allows. Call once at launch; it never blocks play.",
+        "complexTypes": [
+          "SignInResult",
+          "SignInOptions"
+        ],
+        "slug": "signin"
+      },
+      {
+        "name": "isSignedIn",
+        "signature": "() => Promise<SignInResult>",
+        "parameters": [],
+        "returns": "Promise<SignInResult>",
+        "tags": [],
+        "docs": "Whether a player is signed in right now, without trying to sign in.",
+        "complexTypes": [
+          "SignInResult"
+        ],
+        "slug": "issignedin"
+      },
+      {
+        "name": "getServerProof",
+        "signature": "(options?: ServerProofOptions | undefined) => Promise<ServerProof>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "ServerProofOptions | undefined"
+          }
+        ],
+        "returns": "Promise<ServerProof>",
+        "tags": [],
+        "docs": "Proof of the signed-in player for your server. Fails if nobody is signed in.",
+        "complexTypes": [
+          "ServerProof",
+          "ServerProofOptions"
+        ],
+        "slug": "getserverproof"
+      },
+      {
+        "name": "submitScore",
+        "signature": "(options: { leaderboardId: string; score: number; }) => Promise<void>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ leaderboardId: string; score: number; }"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Posts a score to a leaderboard (your ID from App Store Connect or Play Console). Whole numbers only. Fails quietly\n(resolves) when nobody is signed in, so games can call it without checking.",
+        "complexTypes": [],
+        "slug": "submitscore"
+      },
+      {
+        "name": "unlockAchievement",
+        "signature": "(options: { achievementId: string; }) => Promise<void>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ achievementId: string; }"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Unlocks an achievement. Does nothing if it's already unlocked or nobody is signed in.",
+        "complexTypes": [],
+        "slug": "unlockachievement"
+      },
+      {
+        "name": "setAchievementProgress",
+        "signature": "(options: { achievementId: string; percent: number; }) => Promise<void>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ achievementId: string; percent: number; }"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Sets an achievement's progress, 0 to 100 percent. Android needs the achievement made \"incremental\" in Play Console\nwith 100 steps; iPhone takes the percentage directly. Progress never goes backwards.",
+        "complexTypes": [],
+        "slug": "setachievementprogress"
+      },
+      {
+        "name": "showLeaderboard",
+        "signature": "(options?: { leaderboardId?: string | undefined; } | undefined) => Promise<void>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ leaderboardId?: string | undefined; } | undefined"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Shows the platform's own leaderboard screen: one board, or all of them.",
+        "complexTypes": [],
+        "slug": "showleaderboard"
+      },
+      {
+        "name": "showAchievements",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Shows the platform's own achievements screen.",
+        "complexTypes": [],
+        "slug": "showachievements"
+      }
+    ],
+    "properties": []
+  },
+  "interfaces": [
+    {
+      "name": "SignInResult",
+      "slug": "signinresult",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "signedIn",
+          "tags": [],
+          "docs": "Whether a player is signed in to the platform's games service now.",
+          "complexTypes": [],
+          "type": "boolean"
+        },
+        {
+          "name": "platform",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [
+            "GamesPlatform"
+          ],
+          "type": "GamesPlatform"
+        },
+        {
+          "name": "reason",
+          "tags": [],
+          "docs": "Why not, when `signedIn` is false: `unavailable` (no games service here, e.g. the web), `declined` (the player\ncancelled or turned it off), `restricted` (blocked by parental controls or the device), or `error`.",
+          "complexTypes": [],
+          "type": "'error' | 'unavailable' | 'declined' | 'restricted' | undefined"
+        },
+        {
+          "name": "message",
+          "tags": [],
+          "docs": "Extra detail from the platform when something went wrong. Never shown to players as is.",
+          "complexTypes": [],
+          "type": "string | undefined"
+        }
+      ]
+    },
+    {
+      "name": "SignInOptions",
+      "slug": "signinoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "interactive",
+          "tags": [],
+          "docs": "Android only: show Google's sign-in screen if the silent sign-in didn't work. Leave false at launch (Play Games\nsigns in on its own when it can) and use true only from a button the player pressed. iPhone always shows Game\nCenter's own sheet the first time, as Apple requires.",
+          "complexTypes": [],
+          "type": "boolean | undefined"
+        }
+      ]
+    },
+    {
+      "name": "GameCenterProof",
+      "slug": "gamecenterproof",
+      "docs": "Apple's identity verification signature (GKLocalPlayer.fetchItems(forIdentityVerificationSignature:)).",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "platform",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "'game-center'"
+        },
+        {
+          "name": "playerId",
+          "tags": [],
+          "docs": "The team-scoped player ID (teamPlayerID). Only valid for one developer's games. Never display it.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "bundleId",
+          "tags": [],
+          "docs": "The app's bundle ID, which the signature covers.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "publicKeyUrl",
+          "tags": [],
+          "docs": "Where Apple's public key is. The server must only fetch it from Apple's own domain.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "signature",
+          "tags": [],
+          "docs": "Base64 signature.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "salt",
+          "tags": [],
+          "docs": "Base64 salt.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "timestamp",
+          "tags": [],
+          "docs": "Milliseconds since 1970, as a string (it doesn't fit a JavaScript number safely in every case).",
+          "complexTypes": [],
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "PlayGamesProof",
+      "slug": "playgamesproof",
+      "docs": "A one-time server auth code from Play Games (GamesSignInClient.requestServerSideAccess).",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "platform",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "'play-games'"
+        },
+        {
+          "name": "authCode",
+          "tags": [],
+          "docs": "Swap it on your server, once, for the player's ID. Expires within minutes.",
+          "complexTypes": [],
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "ServerProofOptions",
+      "slug": "serverproofoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "serverClientId",
+          "tags": [],
+          "docs": "Android: the OAuth client ID of your game's \"Games server\" credential in Play Console (a web client). Required on\nAndroid, ignored on iPhone.",
+          "complexTypes": [],
+          "type": "string | undefined"
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "typeAliases": [
+    {
+      "name": "GamesPlatform",
+      "slug": "gamesplatform",
+      "docs": "Which games service the device uses. `none` on the web.",
+      "types": [
+        {
+          "text": "'game-center'",
+          "complexTypes": []
+        },
+        {
+          "text": "'play-games'",
+          "complexTypes": []
+        },
+        {
+          "text": "'none'",
+          "complexTypes": []
+        }
+      ]
+    },
+    {
+      "name": "ServerProof",
+      "slug": "serverproof",
+      "docs": "Proof of who the player is, for your own server to check (see `capacitor-game-services/server`). Never trust a\nplayer ID the phone simply tells you.",
+      "types": [
+        {
+          "text": "GameCenterProof",
+          "complexTypes": [
+            "GameCenterProof"
+          ]
+        },
+        {
+          "text": "PlayGamesProof",
+          "complexTypes": [
+            "PlayGamesProof"
+          ]
+        }
+      ]
+    }
+  ],
+  "pluginConfigs": []
+}

@@ -1,0 +1,65 @@
+name: CI
+# Every pull request and every push to main: the server helper's tests and the web build on Linux, the Android
+# library on Linux, and the iPhone code on a Mac (GitHub's Mac machines are free for public repositories).
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      # dist/ is committed so games can install from a tag without building: it must match the source.
+      - name: dist/ is up to date
+        run: |
+          npm run build
+          if ! git diff --exit-code -- dist README.md; then
+            echo "::error::dist/ or the README's API section is out of date. Run npm run build and commit the result."
+            exit 1
+          fi
+
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+      - run: npm ci
+      - name: Build and test the Android library
+        working-directory: android
+        run: ./gradlew clean build test --no-daemon
+
+  ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build for iPhone
+        run: xcodebuild -scheme CapacitorGameServices -destination generic/platform=iOS build
+      - name: Unit tests on a simulator
+        run: |
+          DEVICE=$(xcrun simctl list devices available | grep -m1 -E '^\s+iPhone' | grep -oE '[0-9A-F]{8}-([0-9A-F]{4}-){3}[0-9A-F]{12}')
+          echo "Simulator: $DEVICE"
+          xcodebuild test -scheme CapacitorGameServices -destination "id=$DEVICE"

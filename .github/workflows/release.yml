@@ -1,0 +1,27 @@
+name: Release
+# Tags each new version automatically (OJ-97): when main's package.json has a version that isn't tagged yet, tag the
+# commit vX.Y.Z. Games install from these tags. To release, bump the version in a pull request; merging it tags it.
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Tag the version if it's new
+        run: |
+          VERSION="v$(node -p "require('./package.json').version")"
+          if git rev-parse -q --verify "refs/tags/$VERSION" > /dev/null; then
+            echo "$VERSION is already tagged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$VERSION" -m "$VERSION"
+          git push origin "$VERSION"
+          echo "::notice::Tagged $VERSION"

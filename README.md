@@ -98,10 +98,9 @@ npm run verify:ios  # on a Mac
 CI runs all of these on every pull request: Linux for the web and Android, and a Mac for iPhone.
 
 **Releasing:**
-1. Bump `version` in `package.json` and run `npm run build`.
-2. Merge.
-3. Tag the merge commit `vX.Y.Z` and push the tag.
-4. Games move to the new tag in their own pull request.
+1. Bump `version` in `package.json` and run `npm run build`, in a pull request.
+2. Merge it. The Release workflow tags the merge `vX.Y.Z` automatically.
+3. Games move to the new tag in their own pull request.
 
 ## API
 

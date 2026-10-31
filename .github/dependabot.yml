@@ -26,6 +26,10 @@ updates:
       time: "18:00"
       timezone: Australia/Sydney
     labels: [dependencies]
+    ignore:
+      # Capacitor 8's Android build needs Gradle 8 (OJ-103). Allow Gradle 9 when Capacitor moves to it.
+      - dependency-name: gradle-wrapper
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule:

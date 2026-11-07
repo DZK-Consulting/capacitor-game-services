@@ -41,7 +41,9 @@ function proof(over: Record<string, string> = {}) {
 }
 
 let fetched: string[] = [];
-const fakeFetch = async (url: string) => {
+/** Behaves like Cloudflare Workers' fetch, which refuses redirect: 'error' outright. */
+const fakeFetch = async (url: string, init?: RequestInit) => {
+  if (init?.redirect === 'error') throw new TypeError('Invalid redirect value, must be one of "follow" or "manual"');
   fetched.push(url);
   return new Response(CERT_DER, { status: 200 });
 };
@@ -104,6 +106,16 @@ describe('Game Center proof', () => {
       expect(await code(verifyGameCenter(proof({ publicKeyUrl: u }), gc)), u).toBe('untrusted-key');
     }
     expect(fetched).toEqual([]);
+  });
+
+  test('works on Cloudflare Workers: no redirect "error", and a redirect is refused, not followed', async () => {
+    const seen: (RequestInit | undefined)[] = [];
+    const redirecting = async (_url: string, init?: RequestInit) => {
+      seen.push(init);
+      return new Response(null, { status: 302, headers: { Location: 'https://evil.example/key.cer' } });
+    };
+    expect(await code(verifyGameCenter(proof(), { ...gc, fetch: redirecting }))).toBe('untrusted-key');
+    expect(seen[0]?.redirect).toBe('manual');
   });
 
   test('old or future proofs are refused', async () => {

@@ -104,7 +104,10 @@ async function appleKey(url: string, opts: GameCenterOptions): Promise<CryptoKey
   const now = (opts.now ?? Date.now)();
   const hit = keyCache.get(url);
   if (hit && hit.until > now) return hit.key;
-  const res = await (opts.fetch ?? fetch)(url, { redirect: 'error' });
+  // 'manual', not 'error': Cloudflare Workers refuse redirect: 'error' ("won't be implemented since it does not make sense
+  // at the edge"), which made every Game Center proof fail there. A redirect comes back as a 3xx (or an opaque status 0
+  // in a browser), which isn't ok, so a key is still only ever read from the address Apple gave.
+  const res = await (opts.fetch ?? fetch)(url, { redirect: 'manual' });
   if (!res.ok) throw new ProofError('untrusted-key', `Apple key fetch failed: ${res.status}`);
   const cert = parseCertificate(new Uint8Array(await res.arrayBuffer()));
   if (now < cert.notBefore || now > cert.notAfter)

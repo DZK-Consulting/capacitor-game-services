@@ -1,6 +1,6 @@
 {
   "name": "capacitor-game-services",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Apple Game Center and Google Play Games for Capacitor games: silent sign-in, server proof, leaderboards and achievements, plus a server helper to check who the player is.",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
